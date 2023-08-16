@@ -1,0 +1,6 @@
+<div>
+  <input type='checkbox' [checked]='_checkBox.checked' [ngModel]='_checkBox.checked' (ngModelChange)='handleOnChecked(_checkBox, $event)'
+         [id]='_checkBox'
+         [name]='_checkBox.name' />
+  <label [for]='_checkBox'>{{_checkBox.name}}</label>
+</div>

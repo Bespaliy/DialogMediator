@@ -1,0 +1,22 @@
+button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 100px;
+  background: #34AFA8;
+  padding: 12px 40px;
+  color: #FFFFFF;
+  text-align: center;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  border-color: transparent;
+}
+
+.disabled {
+  background-color: #EFF0F0;
+  color: #A2A8A7;
+}
+

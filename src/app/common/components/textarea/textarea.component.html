@@ -1,0 +1,2 @@
+<textarea [disabled]='disabled' [ngClass]='{ danger: status === "danger" }' name='text' rows='5' [placeholder]='placeholder'
+          [ngModel]='_content' (ngModelChange)='handleOnInput($event)'>{{ _content }}</textarea>

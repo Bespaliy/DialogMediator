@@ -1,0 +1,12 @@
+<div class='dialog-box'>
+  <h1>Remove book from bookshelf</h1>
+  <app-text-box [content]='textBoxContent' />
+  <div>
+    <app-check-box *ngFor='let content of checkBoxContent' [checkBox]='content' />
+  </div>
+  <app-textarea [disabled]='true' [placeholder]='textareaPlaceholder'/>
+  <div class='dialog-box_buttons'>
+    <app-button #cancel [content]='cancelName' />
+    <app-button [disabled]='true' #submit [content]='submitName' />
+  </div>
+</div>

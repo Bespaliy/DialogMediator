@@ -1,0 +1,17 @@
+.dialog-box {
+  display: flex;
+  width: 648px;
+  padding: 40px;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0 auto;
+  border: black solid 1px;
+  border-radius: 40px;
+  gap: 12px;
+
+  &_buttons {
+    display: flex;
+    align-self: flex-end;
+    gap: 20px;
+  }
+}

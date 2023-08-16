@@ -1,0 +1,10 @@
+<button (click)='handleOnShowDialog()'>showDialog</button>
+<button (click)='handleOnShowDialog2()'>showDialog2</button>
+
+<ng-container *ngIf='showDialog'>
+  <app-confirm-dialog-box (close)='showDialog = false'></app-confirm-dialog-box>
+</ng-container>
+
+<ng-container *ngIf='showDialog2'>
+  <app-change-password-dialog-box (close)='showDialog2 = false'></app-change-password-dialog-box>
+</ng-container>
