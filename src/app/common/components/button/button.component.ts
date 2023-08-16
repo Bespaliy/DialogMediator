@@ -10,17 +10,36 @@ import { Widget } from '../../abstractions/base-component.component';
   styleUrls: ['./button.component.scss'],
 })
 export class ButtonComponent extends Widget {
-  @Input() content = 'Click';
-  @Input() disabled = false;
-  constructor() {
-    super();
-  }
+  private _name = 'Click';
+  private _disabled = false;
+
+  get name() {
+    return this._name;
+  };
+
+  get disabled() {
+    return this._disabled;
+  };
+
+  @Input() set name(name: string) {
+    this._name = name;
+  };
+
+  @Input() set disabled(disabled: boolean) {
+    this._disabled = disabled;
+  };
 
   protected handleOnClick() {
     this.mediator.widgetChanged(this);
   }
 
+  override getState() {}
+
   setDisabled(disabled: boolean) {
     this.disabled = disabled;
+  }
+
+  setName(name: string) {
+    this.name = name
   }
 }

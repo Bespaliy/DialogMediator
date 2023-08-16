@@ -12,7 +12,7 @@ import { Widget } from '../../abstractions/base-component.component';
 export class TextBoxComponent extends Widget {
   @Input() content: string[] = [];
 
-  constructor() {
-    super();
+  override getState() {
+    return this.content;
   }
 }

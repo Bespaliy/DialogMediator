@@ -19,11 +19,7 @@ export class TextareaComponent extends Widget {
   protected status: 'basic' | 'danger' = 'basic';
   protected _content = '';
 
-  constructor() {
-    super();
-  }
-
-  getText() {
+  override getState() {
     return this._content;
   }
 

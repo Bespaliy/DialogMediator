@@ -6,7 +6,7 @@
   </div>
   <app-textarea [disabled]='true' [placeholder]='textareaPlaceholder'/>
   <div class='dialog-box_buttons'>
-    <app-button #cancel [content]='cancelName' />
-    <app-button [disabled]='true' #submit [content]='submitName' />
+    <app-button #cancel [name]='buttonCancleName'/>
+    <app-button #submit [name]='buttonSubmitName' [disabled]='true'/>
   </div>
 </div>

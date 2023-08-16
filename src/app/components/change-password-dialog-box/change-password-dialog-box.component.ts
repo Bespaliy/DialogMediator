@@ -1,7 +1,9 @@
 import {
+  AfterViewChecked,
   AfterViewInit,
   Component,
   EventEmitter,
+  OnInit,
   Output,
   ViewChild,
 } from '@angular/core';
@@ -30,6 +32,7 @@ import { Widget } from '../../common/abstractions/base-component.component';
     '../confirm-dialog-box/confirm-dialog-box.component.scss',
     './change-password-dialog-box.component.scss',
   ],
+  providers: [ButtonComponent]
 })
 export class ChangePasswordDialogBoxComponent
   implements DialogBoxMediator, AfterViewInit
@@ -46,44 +49,36 @@ export class ChangePasswordDialogBoxComponent
 
   protected inputNewPlaceHolder = 'Enter new password';
   protected inputRepeatPlaceHolder = 'Repeat password';
-  protected submitName = 'Submit';
-  protected cancelName = 'Cancel';
-  ngAfterViewInit(): void {
-    this.buttonSubmit.setMediator(this);
-    this.buttonCancel.setMediator(this);
-    this.inputNew.setMediator(this);
-    this.inputRepeat.setMediator(this);
-    this.checkBoxShowNew.setMediator(this);
-    this.checkBoxShowRepeat.setMediator(this);
-  }
+  protected buttonCancleName = 'Cancel';
+  protected buttonSubmitName = 'Submit';
 
-  widgetChanged(widget: Widget): void {
-    this.handleNewPasswordInput(widget);
-    this.handleRepeatPasswordInput(widget);
-    this.handleOnCancelClick(widget);
-    this.handleOnSubmitClick(widget);
-    this.handleShowNewPassword(widget);
-    this.handleShowRepeatPassword(widget);
+  ngAfterViewInit(): void {
+    this.registerMediator(this.buttonSubmit);
+    this.registerMediator(this.buttonCancel);
+    this.registerMediator(this.inputNew);
+    this.registerMediator(this.inputRepeat);
+    this.registerMediator(this.checkBoxShowNew);
+    this.registerMediator(this.checkBoxShowRepeat);
   }
 
   private handleShowNewPassword(widget: Widget) {
     if (this.checkBoxShowNew !== widget) return;
-    const { checked } = this.checkBoxShowNew.getSelection();
+    const { checked } = this.checkBoxShowNew.getState();
     if (checked) this.inputNew.setType('text');
     else this.inputNew.setType('password');
   }
 
   private handleShowRepeatPassword(widget: Widget) {
     if (this.checkBoxShowRepeat !== widget) return;
-    const { checked } = this.checkBoxShowRepeat.getSelection();
+    const { checked } = this.checkBoxShowRepeat.getState();
     if (checked) this.inputRepeat.setType('text');
     else this.inputRepeat.setType('password');
   }
 
   private handleNewPasswordInput(widget: Widget) {
     if (this.inputNew !== widget) return;
-    const newPassword = this.inputNew.getText();
-    const repeatPassword = this.inputRepeat.getText();
+    const newPassword = this.inputNew.getState();
+    const repeatPassword = this.inputRepeat.getState();
     if (newPassword.trim().length === 0) {
       this.inputNew.setStatus('danger');
     } else {
@@ -101,8 +96,8 @@ export class ChangePasswordDialogBoxComponent
 
   private handleRepeatPasswordInput(widget: Widget) {
     if (this.inputRepeat !== widget) return;
-    const repeatPassword = this.inputRepeat.getText();
-    const newPassword = this.inputNew.getText();
+    const repeatPassword = this.inputRepeat.getState();
+    const newPassword = this.inputNew.getState();
     if (repeatPassword.trim().length === 0) {
       this.inputRepeat.setStatus('danger');
     } else {
@@ -126,5 +121,18 @@ export class ChangePasswordDialogBoxComponent
   private handleOnSubmitClick(widget: Widget) {
     if (widget !== this.buttonSubmit) return;
     this.close.emit();
+  }
+
+  widgetChanged(widget: Widget): void {
+    this.handleNewPasswordInput(widget);
+    this.handleRepeatPasswordInput(widget);
+    this.handleOnCancelClick(widget);
+    this.handleOnSubmitClick(widget);
+    this.handleShowNewPassword(widget);
+    this.handleShowRepeatPassword(widget);
+  }
+  
+  registerMediator(widget: Widget): void {
+    widget.mediator = this;
   }
 }

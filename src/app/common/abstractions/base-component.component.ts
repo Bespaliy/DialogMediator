@@ -1,13 +1,15 @@
 import { DialogBoxMediator } from './dialog-box.mediator';
 
-export class Widget {
-  protected mediator: DialogBoxMediator;
+export abstract class Widget {
+  private _mediator!: DialogBoxMediator;
 
-  constructor(mediator?: DialogBoxMediator) {
-    this.mediator = mediator!;
+  get mediator(): DialogBoxMediator {
+    return this._mediator;
   }
 
-  public setMediator(mediator: DialogBoxMediator): void {
-    this.mediator = mediator;
+  set mediator(mediator: DialogBoxMediator) {
+    this._mediator = mediator; 
   }
+
+  abstract getState(): any;
 }

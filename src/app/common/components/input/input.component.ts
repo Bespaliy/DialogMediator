@@ -11,6 +11,7 @@ import { Widget } from '../../abstractions/base-component.component';
   styleUrls: ['./input.component.scss'],
 })
 export class InputComponent extends Widget {
+
   @Input() set content(text: string) {
     this._content = text;
   }
@@ -19,14 +20,6 @@ export class InputComponent extends Widget {
   protected type: 'password' | 'text' = 'password';
 
   protected _content = '';
-
-  constructor() {
-    super();
-  }
-
-  getText() {
-    return this._content;
-  }
 
   setStatus(status: 'basic' | 'danger') {
     this.status = status;
@@ -39,5 +32,9 @@ export class InputComponent extends Widget {
   handleOnInput(text: string) {
     this._content = text;
     this.mediator.widgetChanged(this);
+  }
+
+  override getState() {
+    return this._content;
   }
 }

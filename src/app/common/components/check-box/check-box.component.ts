@@ -13,16 +13,15 @@ import { FormsModule } from '@angular/forms';
 })
 export class CheckBoxComponent extends Widget {
   public _checkBox: CheckBoxType = { name: '', checked: false };
+
   @Input() set checkBox(checkBox: CheckBoxType) {
     this._checkBox = checkBox;
   }
-  constructor() {
-    super();
-  }
 
-  getSelection() {
+  override getState() {
     return this._checkBox;
   }
+
   handleOnChecked(item: CheckBoxType, checked: boolean) {
     this.checkBox = { ...item, checked };
     this.mediator.widgetChanged(this);

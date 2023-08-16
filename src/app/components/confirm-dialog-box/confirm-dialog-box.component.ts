@@ -15,6 +15,7 @@ import { Widget } from '../../common/abstractions/base-component.component';
 import { CheckBoxComponent } from '../../common/components/check-box/check-box.component';
 import { CheckBoxContent } from '../../common/components/check-box/check-box.type';
 import { TextareaComponent } from '../../common/components/textarea/textarea.component';
+import { ThisReceiver } from '@angular/compiler';
 
 @Component({
   selector: 'app-confirm-dialog-box',
@@ -51,30 +52,23 @@ export class ConfirmDialogBoxComponent
     { name: 'Other', checked: false },
   ];
   protected textareaPlaceholder = 'Enter the reason description';
-  protected submitName = 'Submit a removal request';
-  protected cancelName = 'Cancel';
+  protected buttonCancleName = 'Cancel';
+  protected buttonSubmitName = 'Submit a removal request';
 
   ngAfterViewInit(): void {
-    this.buttonSubmit.setMediator(this);
-    this.buttonCancel.setMediator(this);
+    this.registerMediator(this.buttonCancel);
+    this.registerMediator(this.buttonSubmit);
+    this.registerMediator(this.textBox);
+    this.registerMediator(this.textarea);
     this.checkBoxes.forEach((checkBox) => {
-      checkBox.setMediator(this);
+      this.registerMediator(checkBox);
     });
-    this.textBox.setMediator(this);
-    this.textarea.setMediator(this);
-  }
-
-  widgetChanged(widget: Widget) {
-    this.handleOnCheckBoxChange(widget);
-    this.handleOnTextareaChange(widget);
-    this.handleOnCancelClick(widget);
-    this.handleOnSubmitClick(widget);
   }
 
   private handleOnCheckBoxChange(widget: Widget) {
     const checkBox = this.checkBoxes.find((item) => item === widget);
     if (!checkBox) return;
-    const select = checkBox.getSelection();
+    const select = checkBox.getState();
 
     if (select.checked) {
       select.name === 'Other'
@@ -100,7 +94,7 @@ export class ConfirmDialogBoxComponent
 
   private handleOnTextareaChange(widget: Widget) {
     if (widget === this.textarea) {
-      const text = this.textarea.getText();
+      const text = this.textarea.getState();
       if (text.trim().length > 10) {
         this.textarea.setStatus('danger');
         this.buttonSubmit.setDisabled(true);
@@ -109,5 +103,16 @@ export class ConfirmDialogBoxComponent
         this.buttonSubmit.setDisabled(false);
       }
     }
+  }
+
+  widgetChanged(widget: Widget) {
+    this.handleOnCheckBoxChange(widget);
+    this.handleOnTextareaChange(widget);
+    this.handleOnCancelClick(widget);
+    this.handleOnSubmitClick(widget);
+  }
+
+  registerMediator(widget: Widget): void {
+    widget.mediator = this;
   }
 }
