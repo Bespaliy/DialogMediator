@@ -11,9 +11,11 @@ export class MainComponent {
 
   handleOnShowDialog() {
     this.showDialog = true;
+    this.showDialog2 = false;
   }
 
   handleOnShowDialog2() {
     this.showDialog2 = true;
+    this.showDialog = false;
   }
 }

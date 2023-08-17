@@ -8,14 +8,13 @@ import {
   ViewChildren,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DialogBoxMediator } from '../../common/abstractions/dialog-box.mediator';
+import { DialogBoxMediatorInterface } from '../../common/interfaces/dialog-box-mediator.interface';
 import { ButtonComponent } from '../../common/components/button/button.component';
 import { TextBoxComponent } from '../../common/components/text-box/text-box.component';
-import { Widget } from '../../common/abstractions/base-component.component';
+import { WidgetAbstract } from '../../common/abstract-classes/widget.abstract';
 import { CheckBoxComponent } from '../../common/components/check-box/check-box.component';
 import { CheckBoxContent } from '../../common/components/check-box/check-box.type';
 import { TextareaComponent } from '../../common/components/textarea/textarea.component';
-import { ThisReceiver } from '@angular/compiler';
 
 @Component({
   selector: 'app-confirm-dialog-box',
@@ -31,7 +30,7 @@ import { ThisReceiver } from '@angular/compiler';
   styleUrls: ['./confirm-dialog-box.component.scss'],
 })
 export class ConfirmDialogBoxComponent
-  implements DialogBoxMediator, AfterViewInit
+  implements DialogBoxMediatorInterface, AfterViewInit
 {
   @ViewChild('submit') private buttonSubmit!: ButtonComponent;
   @ViewChild('cancel') private buttonCancel!: ButtonComponent;
@@ -42,18 +41,11 @@ export class ConfirmDialogBoxComponent
 
   @Output() close = new EventEmitter<void>();
 
-  protected textBoxContent = [
-    'The book will be removed from bookshelf after administrator approval.\n' +
-      'Please specify the reason for the removal:',
-  ];
   protected checkBoxContent: CheckBoxContent = [
     { name: 'Book was lost', checked: false },
     { name: 'Book was damaged', checked: false },
     { name: 'Other', checked: false },
   ];
-  protected textareaPlaceholder = 'Enter the reason description';
-  protected buttonCancleName = 'Cancel';
-  protected buttonSubmitName = 'Submit a removal request';
 
   ngAfterViewInit(): void {
     this.registerMediator(this.buttonCancel);
@@ -65,54 +57,53 @@ export class ConfirmDialogBoxComponent
     });
   }
 
-  private handleOnCheckBoxChange(widget: Widget) {
+  private handleOnCheckBoxChange(widget: WidgetAbstract) {
     const checkBox = this.checkBoxes.find((item) => item === widget);
     if (!checkBox) return;
+
     const select = checkBox.getState();
+    const isOther = select.name === 'Other';
 
-    if (select.checked) {
-      select.name === 'Other'
-        ? this.textarea.setDisabled(false)
-        : this.textarea.setDisabled(true);
+    this.checkBoxes.forEach((checkBox) => {
+      if (select !== checkBox.getState()) {
+        checkBox.setChecked(false);
+      }
+    });
 
-      this.buttonSubmit.setDisabled(false);
-    } else {
-      this.buttonSubmit.setDisabled(true);
-      this.textarea.setDisabled(true);
-    }
+    this.textarea.setDisabled(!isOther);
+    this.buttonSubmit.setDisabled(!select.checked);
   }
 
-  private handleOnCancelClick(widget: Widget) {
+  private handleOnCancelClick(widget: WidgetAbstract) {
     if (widget !== this.buttonCancel) return;
     this.close.emit();
   }
 
-  private handleOnSubmitClick(widget: Widget) {
+  private handleOnSubmitClick(widget: WidgetAbstract) {
     if (widget !== this.buttonSubmit) return;
     this.close.emit();
   }
 
-  private handleOnTextareaChange(widget: Widget) {
+  private handleOnTextareaChange(widget: WidgetAbstract) {
     if (widget === this.textarea) {
       const text = this.textarea.getState();
-      if (text.trim().length > 10) {
-        this.textarea.setStatus('danger');
-        this.buttonSubmit.setDisabled(true);
-      } else {
-        this.textarea.setStatus('basic');
-        this.buttonSubmit.setDisabled(false);
-      }
+      const isTextLengthGreaterThan10 = text.length > 10;
+
+      this.textarea.setStatus(
+        isTextLengthGreaterThan10 ? 'danger' : 'basic'
+      );
+      this.buttonSubmit.setDisabled(isTextLengthGreaterThan10);
     }
   }
 
-  widgetChanged(widget: Widget) {
+  widgetChanged(widget: WidgetAbstract) {
     this.handleOnCheckBoxChange(widget);
     this.handleOnTextareaChange(widget);
     this.handleOnCancelClick(widget);
     this.handleOnSubmitClick(widget);
   }
 
-  registerMediator(widget: Widget): void {
+  registerMediator(widget: WidgetAbstract): void {
     widget.mediator = this;
   }
 }

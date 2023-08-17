@@ -1,12 +1,15 @@
 <div class='dialog-box'>
   <h1>Remove book from bookshelf</h1>
-  <app-text-box [content]='textBoxContent' />
+  <app-text-box [content]="[
+    'The book will be removed from bookshelf after administrator approval. ' +
+    'Please specify the reason for the removal:',
+  ]" />
   <div>
     <app-check-box *ngFor='let content of checkBoxContent' [checkBox]='content' />
   </div>
-  <app-textarea [disabled]='true' [placeholder]='textareaPlaceholder'/>
+  <app-textarea [disabled]='true' placeholder="Enter the reason description" />
   <div class='dialog-box_buttons'>
-    <app-button #cancel [name]='buttonCancleName'/>
-    <app-button #submit [name]='buttonSubmitName' [disabled]='true'/>
+    <app-button #cancel name="Cancel" />
+    <app-button #submit name="Submit a removal request" [disabled]='true' />
   </div>
 </div>

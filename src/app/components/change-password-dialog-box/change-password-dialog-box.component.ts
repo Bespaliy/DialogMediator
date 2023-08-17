@@ -1,20 +1,20 @@
 import {
-  AfterViewChecked,
   AfterViewInit,
   Component,
   EventEmitter,
-  OnInit,
   Output,
   ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DialogBoxMediator } from '../../common/abstractions/dialog-box.mediator';
+import { DialogBoxMediatorInterface } from '../../common/interfaces/dialog-box-mediator.interface';
 import { ButtonComponent } from '../../common/components/button/button.component';
 import { CheckBoxComponent } from '../../common/components/check-box/check-box.component';
 import { TextBoxComponent } from '../../common/components/text-box/text-box.component';
 import { TextareaComponent } from '../../common/components/textarea/textarea.component';
 import { InputComponent } from '../../common/components/input/input.component';
-import { Widget } from '../../common/abstractions/base-component.component';
+import { WidgetAbstract } from '../../common/abstract-classes/widget.abstract';
+import { Validator } from '../../common/utils/validator.util';
+import { LoaderComponent } from '../../common/components/loader/loader.component';
 
 @Component({
   selector: 'app-change-password-dialog-box',
@@ -26,16 +26,16 @@ import { Widget } from '../../common/abstractions/base-component.component';
     TextBoxComponent,
     TextareaComponent,
     InputComponent,
+    LoaderComponent,
   ],
   templateUrl: './change-password-dialog-box.component.html',
   styleUrls: [
     '../confirm-dialog-box/confirm-dialog-box.component.scss',
     './change-password-dialog-box.component.scss',
   ],
-  providers: [ButtonComponent]
 })
 export class ChangePasswordDialogBoxComponent
-  implements DialogBoxMediator, AfterViewInit
+  implements DialogBoxMediatorInterface, AfterViewInit
 {
   @ViewChild('new') private inputNew!: InputComponent;
   @ViewChild('repeat') private inputRepeat!: InputComponent;
@@ -44,13 +44,9 @@ export class ChangePasswordDialogBoxComponent
   private checkBoxShowRepeat!: CheckBoxComponent;
   @ViewChild('submit') private buttonSubmit!: ButtonComponent;
   @ViewChild('cancel') private buttonCancel!: ButtonComponent;
+  @ViewChild('loader') private loader!: LoaderComponent;
 
   @Output() close = new EventEmitter<void>();
-
-  protected inputNewPlaceHolder = 'Enter new password';
-  protected inputRepeatPlaceHolder = 'Repeat password';
-  protected buttonCancleName = 'Cancel';
-  protected buttonSubmitName = 'Submit';
 
   ngAfterViewInit(): void {
     this.registerMediator(this.buttonSubmit);
@@ -59,71 +55,58 @@ export class ChangePasswordDialogBoxComponent
     this.registerMediator(this.inputRepeat);
     this.registerMediator(this.checkBoxShowNew);
     this.registerMediator(this.checkBoxShowRepeat);
+    this.registerMediator(this.loader);
   }
 
-  private handleShowNewPassword(widget: Widget) {
+  private handleShowNewPassword(widget: WidgetAbstract) {
     if (this.checkBoxShowNew !== widget) return;
     const { checked } = this.checkBoxShowNew.getState();
-    if (checked) this.inputNew.setType('text');
-    else this.inputNew.setType('password');
+    this.inputNew.setType(checked ? 'text' : 'password');
   }
 
-  private handleShowRepeatPassword(widget: Widget) {
+  private handleShowRepeatPassword(widget: WidgetAbstract) {
     if (this.checkBoxShowRepeat !== widget) return;
     const { checked } = this.checkBoxShowRepeat.getState();
-    if (checked) this.inputRepeat.setType('text');
-    else this.inputRepeat.setType('password');
+    this.inputRepeat.setType(checked ? 'text' : 'password');
   }
 
-  private handleNewPasswordInput(widget: Widget) {
+  private handleNewPasswordInput(widget: WidgetAbstract) {
     if (this.inputNew !== widget) return;
     const newPassword = this.inputNew.getState();
     const repeatPassword = this.inputRepeat.getState();
-    if (newPassword.trim().length === 0) {
-      this.inputNew.setStatus('danger');
-    } else {
-      this.inputNew.setStatus('basic');
-    }
 
-    if (repeatPassword != newPassword) {
-      this.inputRepeat.setStatus('danger');
-      this.buttonSubmit.setDisabled(true);
-    } else {
-      this.buttonSubmit.setDisabled(false);
-      this.inputRepeat.setStatus('basic');
-    }
+    const isNotEmpty = Validator.required(newPassword);
+
+    this.inputNew.setStatus(isNotEmpty ? 'basic' : 'danger');
+
+    const isEqual = Validator.compare(newPassword, repeatPassword);
+
+    this.inputRepeat.setStatus(isEqual ? 'basic' : 'danger');
+    this.buttonSubmit.setDisabled(!isEqual);
   }
 
-  private handleRepeatPasswordInput(widget: Widget) {
+  private handleRepeatPasswordInput(widget: WidgetAbstract) {
     if (this.inputRepeat !== widget) return;
     const repeatPassword = this.inputRepeat.getState();
     const newPassword = this.inputNew.getState();
-    if (repeatPassword.trim().length === 0) {
-      this.inputRepeat.setStatus('danger');
-    } else {
-      this.inputRepeat.setStatus('basic');
-    }
 
-    if (repeatPassword != newPassword) {
-      this.inputRepeat.setStatus('danger');
-      this.buttonSubmit.setDisabled(true);
-    } else {
-      this.buttonSubmit.setDisabled(false);
-      this.inputRepeat.setStatus('basic');
-    }
+    const isEqual = Validator.compare(newPassword, repeatPassword);
+
+    this.buttonSubmit.setDisabled(!isEqual);
+    this.inputRepeat.setStatus(isEqual ? 'basic' : 'danger');
   }
 
-  private handleOnCancelClick(widget: Widget) {
+  private handleOnCancelClick(widget: WidgetAbstract) {
     if (widget !== this.buttonCancel) return;
     this.close.emit();
   }
 
-  private handleOnSubmitClick(widget: Widget) {
+  private handleOnSubmitClick(widget: WidgetAbstract) {
     if (widget !== this.buttonSubmit) return;
-    this.close.emit();
+    this.loader.setActive(true);
   }
 
-  widgetChanged(widget: Widget): void {
+  widgetChanged(widget: WidgetAbstract): void {
     this.handleNewPasswordInput(widget);
     this.handleRepeatPasswordInput(widget);
     this.handleOnCancelClick(widget);
@@ -131,8 +114,8 @@ export class ChangePasswordDialogBoxComponent
     this.handleShowNewPassword(widget);
     this.handleShowRepeatPassword(widget);
   }
-  
-  registerMediator(widget: Widget): void {
+
+  registerMediator(widget: WidgetAbstract): void {
     widget.mediator = this;
   }
 }

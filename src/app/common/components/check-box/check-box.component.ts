@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Widget } from '../../abstractions/base-component.component';
+import { WidgetAbstract } from '../../abstract-classes/widget.abstract';
 import { CheckBoxType } from './check-box.type';
 import { FormsModule } from '@angular/forms';
 
@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './check-box.component.html',
   styleUrls: ['./check-box.component.scss'],
 })
-export class CheckBoxComponent extends Widget {
+export class CheckBoxComponent extends WidgetAbstract {
   public _checkBox: CheckBoxType = { name: '', checked: false };
 
   @Input() set checkBox(checkBox: CheckBoxType) {
@@ -22,7 +22,11 @@ export class CheckBoxComponent extends Widget {
     return this._checkBox;
   }
 
-  handleOnChecked(item: CheckBoxType, checked: boolean) {
+  setChecked(checked: boolean) {
+    this.checkBox = { ...this._checkBox, checked };
+  }
+
+  protected handleOnChecked(item: CheckBoxType, checked: boolean) {
     this.checkBox = { ...item, checked };
     this.mediator.widgetChanged(this);
   }

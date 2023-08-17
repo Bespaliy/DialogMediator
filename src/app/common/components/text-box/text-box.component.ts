@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Widget } from '../../abstractions/base-component.component';
+import { WidgetAbstract } from '../../abstract-classes/widget.abstract';
 
 @Component({
   selector: 'app-text-box',
@@ -9,7 +9,7 @@ import { Widget } from '../../abstractions/base-component.component';
   templateUrl: './text-box.component.html',
   styleUrls: ['./text-box.component.scss'],
 })
-export class TextBoxComponent extends Widget {
+export class TextBoxComponent extends WidgetAbstract {
   @Input() content: string[] = [];
 
   override getState() {

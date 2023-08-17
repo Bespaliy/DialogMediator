@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Widget } from '../../abstractions/base-component.component';
+import { WidgetAbstract } from '../../abstract-classes/widget.abstract';
 
 @Component({
   selector: 'app-input',
@@ -10,8 +10,7 @@ import { Widget } from '../../abstractions/base-component.component';
   templateUrl: './input.component.html',
   styleUrls: ['./input.component.scss'],
 })
-export class InputComponent extends Widget {
-
+export class InputComponent extends WidgetAbstract {
   @Input() set content(text: string) {
     this._content = text;
   }
@@ -29,12 +28,12 @@ export class InputComponent extends Widget {
     this.type = type;
   }
 
-  handleOnInput(text: string) {
+  protected handleOnInput(text: string) {
     this._content = text;
     this.mediator.widgetChanged(this);
   }
 
   override getState() {
-    return this._content;
+    return this._content.trim();
   }
 }

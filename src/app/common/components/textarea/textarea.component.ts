@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Widget } from '../../abstractions/base-component.component';
+import { WidgetAbstract } from '../../abstract-classes/widget.abstract';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -10,7 +10,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './textarea.component.html',
   styleUrls: ['./textarea.component.scss'],
 })
-export class TextareaComponent extends Widget {
+export class TextareaComponent extends WidgetAbstract {
   @Input() set content(text: string) {
     this._content = text;
   }
@@ -20,7 +20,7 @@ export class TextareaComponent extends Widget {
   protected _content = '';
 
   override getState() {
-    return this._content;
+    return this._content.trim();
   }
 
   setStatus(status: 'basic' | 'danger') {
@@ -31,7 +31,11 @@ export class TextareaComponent extends Widget {
     this.disabled = disabled;
   }
 
-  handleOnInput(text: string) {
+  setText(text: string) {
+    this.content = text;
+  }
+
+  protected handleOnInput(text: string) {
     this._content = text;
     this.mediator.widgetChanged(this);
   }
